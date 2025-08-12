@@ -1254,7 +1254,7 @@ li, a,span, p{
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.7); /* Gelap 60% */
+    background: rgba(0,0,0,0.6); /* Gelap 60% */
     z-index: 0;
   }
   /* Konten di atas overlay */
