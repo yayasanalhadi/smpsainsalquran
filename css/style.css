@@ -1263,7 +1263,16 @@ li, a,span, p{
     z-index: 1;
   }
 
-
+    #bloggerku .card-text {
+      font-size: 0.9rem;
+      color: #555;
+    }
+    #bloggerku img{
+      width: 100%;
+      height: auto;
+      max-height: 200px;
+      object-fit: cover;
+    }
 
 
 
