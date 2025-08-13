@@ -504,6 +504,17 @@
         </div>
     </div>
 
+    <section id="postinganblog">
+      <div class="container py-5">
+        <h2 class="text-success fw-bold">POSTINGAN & ARTIKEL</h2>
+        <p class="text-secondary text-capitalize text-center" data-aos="fade-up">dokumentasi, informasi dan karya tulis siswa</p>
+        <div class="row" id="post-list"></div>
+        <div class="text-center mt-4">
+          <button id="load-more" class="btn btn-outline-primary">Muat Lebih Banyak</button>
+        </div>
+      </div>
+    </section>
+    
     <!-- pendaftaran -->
     <div class="containerArtikelHome container" id="pendaftaran">
         <h2 class="text-success fw-bold">Informasi Pendaftaran</h2>
@@ -721,6 +732,71 @@
         AOS.refresh();
     });
     </script>
+    <script>
+let allEntries = [];
+let currentIndex = 0;
+const perPage = 3; // jumlah posting per klik
+
+function tampilkanFeed(json) {
+  allEntries = json.feed.entry;
+  renderPosts();
+}
+
+function renderPosts() {
+  const container = document.getElementById("post-list");
+  let html = "";
+
+  const slice = allEntries.slice(currentIndex, currentIndex + perPage);
+  slice.forEach(entry => {
+    const title = entry.title.$t;
+    const link = entry.link.find(l => l.rel === "alternate").href;
+    const published = new Date(entry.published.$t)
+                        .toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    // Ambil thumbnail & perbesar ukurannya
+    let thumbnail = "https://via.placeholder.com/600x400?text=No+Image";
+    if (entry.media$thumbnail) {
+      thumbnail = entry.media$thumbnail.url.replace(/\/s\d+-/, "/s600-");
+    } else if (entry.content && entry.content.$t.match(/<img[^>]+src="([^">]+)"/)) {
+      thumbnail = entry.content.$t.match(/<img[^>]+src="([^">]+)"/)[1].replace(/\/s\d+-/, "/s600-");
+    }
+
+    // Ambil excerpt (maks 20 kata)
+    let excerpt = entry.content.$t.replace(/<[^>]+>/g, "");
+    excerpt = excerpt.split(/\s+/).slice(0, 20).join(" ") + "...";
+
+    html += `
+      <div id="bloggerku" class="col-md-4 mb-4"  data-aos="fade-up">
+        <div class="card h-100 shadow-sm">
+          <img src="${thumbnail}" class="card-img-top" alt="${title}">
+          <div class="card-body">
+            <h5 class="card-title">${title}</h5>
+            <p class="card-text"><small class="text-muted">${published}</small></p>
+            <p class="card-text">${excerpt}</p>
+            <a href="${link}" target="_blank" class="btn btn-primary btn-sm">Baca Selengkapnya</a>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML += html;
+  currentIndex += perPage;
+
+  // Sembunyikan tombol jika semua sudah tampil
+  if (currentIndex >= allEntries.length) {
+    document.getElementById("load-more").style.display = "none";
+  }
+}
+
+// Event tombol load more
+document.getElementById("load-more").addEventListener("click", renderPosts);
+
+// Load JSONP
+const script = document.createElement("script");
+script.src = "https://alkamalsidareja.blogspot.com/feeds/posts/default?alt=json-in-script&max-results=12&callback=tampilkanFeed";
+document.body.appendChild(script);
+</script>
 </body>
 
 </html>
